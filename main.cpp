@@ -2,13 +2,23 @@
 using namespace std;
 
 // Tema constructores y destructores
-class punto_t {
-    int x = 0;  // Inicializacion dentro de la class (in class)
-    int y = 0;
-public:
-    friend ostream& operator<<(ostream& os, const punto_t& pto); // la clase punto le da acceso al operador <<
-    friend punto_t operator++(const punto_t& pto); // Le da acceso al operador sobrecargado ++
-};
+namespace privado {
+    class punto_t {
+        int x = 0;  // Inicializacion dentro de la class (in class)
+        int y = 0;
+    public:
+        friend ostream& operator<<(ostream& os, const privado::punto_t& pto); // la clase punto le da acceso al operador <<
+        friend ostream& operator<<(ostream& os, const privado::punto_t*& pto);
+        friend privado::punto_t operator++(const privado::punto_t& pto); // Le da acceso al operador sobrecargado ++
+    };
+}
+
+namespace publico {
+    struct punto_t {
+        int x = 0;  // Inicializacion dentro de la class (in class)
+        int y = 0;
+    };
+}
 
 /*
     Los operadores se pueden clasificar en 2 tipos
@@ -32,17 +42,17 @@ public:
         & -->
         ++ -->
 */
-ostream& operator<<(ostream& os, const punto_t& pto) {
+ostream& operator<<(ostream& os, const privado::punto_t& pto) {
     os << "(" << pto.x << "," << pto.y << ")";
     return os;
 }
 
-ostream& operator<<(ostream& os, const punto_t*& pto) {
+ostream& operator<<(ostream& os, const privado::punto_t*& pto) {
     os << "(" << pto->x << "," << pto->y << ")";
     return os;
 }
 
-punto_t operator++(const punto_t& pto) {    // referencia constante y por que es util
+privado::punto_t operator++(const privado::punto_t& pto) {    // referencia constante y por que es util
     auto result = pto;
     result.x++;
     result.y++;
@@ -56,6 +66,11 @@ punto_t operator++(const punto_t& pto) {    // referencia constante y por que es
    3. Struct tiene por defecto los atributos y metodos publicos, por tanto puede implementar el constructor copia
         utilizando sus atributos ordenadamente entre {}
 */
+
+/*
+ * Regla para implementar constructores:
+ *  Se implementa constructores cuando se tiene acceso a la memoria dinamica o se usa puntero
+ */
 
 int main() {
 
